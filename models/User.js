@@ -18,9 +18,6 @@ const userSchema = new mongoose.Schema({
     countryCode: {
       type: String,
     },
-    country : {
-      type : String
-    },
     number: {
       type: String,
     },

@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { json } = require("body-parser");
 
 const secretKey = "dakshyaAppForNepal";
 
@@ -35,14 +36,17 @@ router.route("/login").post(async (req, res) => {
 
 
 router.route("/register").post(async (req, res) => {
+
   try {
     const fullname = req.body.fullName;
     const email = req.body.email;
     const password = req.body.password;
-    const phoneCountryCode = req.body.phone.countryCode;
-    const phoneNumber = req.body.phone.number;
-    const country = req.body.phone.country;
+    
+    const phone = JSON.parse(req.body.phone)
+    const countryCode = phone.countryCode;
+    const number = phone.number;
     const dob = req.body.dob;
+
 
     // Code to save the received user to database
     const newUser = User({
@@ -50,13 +54,13 @@ router.route("/register").post(async (req, res) => {
       email: email,
       password: password,
       phone: {
-        countryCode: phoneCountryCode,
-        country: country,
-        number: phoneNumber,
+        countryCode: countryCode,
+        number: number,
       },
       dob: dob,
     });
     const savedUser = await newUser.save();
+   
     const token = jwt.sign({ _id: savedUser._id }, secretKey, {
       expiresIn: "1h",
     });
