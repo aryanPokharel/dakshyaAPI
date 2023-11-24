@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Request = require("../models/Request");
 const jwt = require("jsonwebtoken");
+const authenticateToken = require("../authenticate/authenticate");
 
 const secretKey = "dakshyaAppForNepal";
 
@@ -11,67 +13,60 @@ mongoose.connect(
   "mongodb+srv://dakshyaApp:Dakshya123@cluster0.pyavqnw.mongodb.net/?retryWrites=true&w=majority"
 );
 
-router.route("/login").post(async (req, res) => {
+router.post("/postRequest", authenticateToken, async (req, res) => {
+
   try {
-    const email = req.body.email;
-    const password = req.body.password;
+    const title = req.body.title;
+    const description = req.body.description;
+    const location = req.body.location;
+    const attachments = req.body.attachments;
 
-    const user = await User.findOne({ email: email });
+    const category = req.body.category;
+    const date = req.body.date;
+    const rate = req.body.rate;
 
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid username or password" });
-    }
+    const createdOn = Date.now().toString();
+    const user = req.user._id;
+    const createdBy = user;
 
-    // Generate JWT token
-    const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: "1h" });
-
-    // Send the token in the response
-    res.json({ token: token });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-
-router.route("/register").post(async (req, res) => {
-  try {
-    const fullname = req.body.fullName;
-    const email = req.body.email;
-    const password = req.body.password;
-    const phoneCountryCode = req.body.phone.countryCode;
-    const phoneNumber = req.body.phone.number;
-    const country = req.body.phone.country;
-    const dob = req.body.dob;
-
-    // Code to save the received user to database
-    const newUser = User({
-      fullName: fullname,
-      email: email,
-      password: password,
-      phone: {
-        countryCode: phoneCountryCode,
-        country: country,
-        number: phoneNumber,
-      },
-      dob: dob,
+    const newRequest = new Request({
+      title,
+      description,
+      location,
+      attachments,
+      category,
+      date,
+      rate,
+      createdBy,
+      createdOn,
     });
-    const savedUser = await newUser.save();
-    const token = jwt.sign({ _id: savedUser._id }, secretKey, {
-      expiresIn: "1h",
-    });
-    res.json({ token: token });
+
+    newRequest.save();
+
+    res.json({ message: "Request saved", newRequest: newRequest  });
   } catch (error) {
     console.error(error);
 
     // Check the error to determine the cause (e.g., duplicate key violation)
-    if (error.code === 11000 || error.name === 'MongoError') {
+    if (error.code === 11000 || error.name === "MongoError") {
       // MongoDB duplicate key error
-      res.status(400).json({ message: 'Duplicate user registration' });
+      res.status(400).json({ message: "Duplicate user registration" });
     } else {
       // Other error
-      res.status(500).json({ message: 'Internal Server Error' });
+      res.status(500).json({ message: "Internal Server Error" });
     }
+  }
+});
+
+router.get("/fetchAllRequests", authenticateToken, async (req, res) => {
+  try {
+    const requests = await Request.find();
+    if (!requests) {
+      return res.status(404).json({ message: "Requests not found" });
+    }
+    res.json(requests);
+  } catch {
+    res.status(500).send();
   }
 });
 

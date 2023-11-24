@@ -1,29 +1,29 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 app.use(express.urlencoded({ extended: true }));
 
-const cors = require('cors');
+const cors = require("cors");
 app.use(cors());
 
 app.use(bodyParser.json());
 
-
-
 // Importing the routers
-const userRouter = require('./routers/userRouter');
-const profileRouter = require('./routers/profileRouter');
+const userRouter = require("./routers/userRouter");
+const profileRouter = require("./routers/profileRouter");
+const requestRouter = require("./routers/requestRouter");
 
-app.use('/users', userRouter);
-app.use('/profile', profileRouter);
+app.use("/users", userRouter);
+app.use("/profile", profileRouter);
+app.use("/request", requestRouter);
 
 app.use(express.json());
 
 const port = 3000;
 // Find an available port
 const server = app.listen(port, () => {
-//   const port = server.address().port;
+  //   const port = server.address().port;
 
   console.log(`The Server is running on port ${port}`);
 });
