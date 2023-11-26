@@ -41,6 +41,12 @@ const requestSchema = new mongoose.Schema({
     required: true,
     
   },
+  bids: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bid", // Reference to the Bid model
+    },
+  ],
 });
 
 module.exports = mongoose.model("Request", requestSchema);

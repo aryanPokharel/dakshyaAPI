@@ -18,14 +18,13 @@ router.route("/login").post(async (req, res) => {
     const password = req.body.password;
 
     const user = await User.findOne({ email: email });
-
+    
     if (!user || user.password !== password) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
     // Generate JWT token
     const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: "1h" });
-
     // Send the token in the response
     res.json({ token: token });
   } catch (error) {

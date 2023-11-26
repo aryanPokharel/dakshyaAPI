@@ -13,10 +13,12 @@ app.use(bodyParser.json());
 const userRouter = require("./routers/userRouter");
 const profileRouter = require("./routers/profileRouter");
 const requestRouter = require("./routers/requestRouter");
+const bidRouter = require("./routers/bidRouter");
 
 app.use("/users", userRouter);
 app.use("/profile", profileRouter);
 app.use("/request", requestRouter);
+app.use("/bid", bidRouter);
 
 app.use(express.json());
 
