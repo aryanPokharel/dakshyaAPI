@@ -70,4 +70,19 @@ router.get("/fetchAllRequests", authenticateToken, async (req, res) => {
   }
 });
 
+// Route to handle request delete by Id
+ router.post ("/deleteRequestById", authenticateToken, async (req, res) => {
+    try {
+      const id = req.body.requestId;
+      const deletedRequest = await Request.findByIdAndDelete(id);
+      if (!deletedRequest) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+      res.json({ message: "Request deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+ });
+
 module.exports = router;

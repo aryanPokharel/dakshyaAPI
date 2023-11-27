@@ -97,6 +97,35 @@ router.post("/withdrawBid", authenticateToken, async (req, res) => {
   }
 })
 
+// Get all bids by user
+
+router.get("/fetchAllBidsByUser", authenticateToken, async (req, res) => {
+  try {
+    const bids = await Bid.find({ createdBy: req.user._id });
+    if (!bids) {
+      return res.status(404).json({ message: "Bids not found" });
+    }
+    res.json(bids);
+  } catch {
+    res.status(500).send();
+  }
+});
+
+// Delete bid by id 
+router.delete("/deleteBidById", authenticateToken, async (req, res) => {
+  try {
+    const bidId = req.body.bidId;
+    const bid = await Bid.findOne({ _id: bidId });
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
+    await Bid.deleteOne({ _id: bidId });
+    res.json({ message: "Bid deleted" });
+  } catch {
+    res.status(500).send();
+  }
+});
+
 
 
 module.exports = router;
