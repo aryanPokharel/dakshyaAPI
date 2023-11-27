@@ -97,7 +97,6 @@ router.post("/withdrawBid", authenticateToken, async (req, res) => {
   }
 })
 
-// Get all bids by user
 
 router.get("/fetchAllBidsByUser", authenticateToken, async (req, res) => {
   try {
@@ -111,7 +110,6 @@ router.get("/fetchAllBidsByUser", authenticateToken, async (req, res) => {
   }
 });
 
-// Delete bid by id 
 router.delete("/deleteBidById", authenticateToken, async (req, res) => {
   try {
     const bidId = req.body.bidId;
