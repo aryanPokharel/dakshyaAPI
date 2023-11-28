@@ -134,9 +134,9 @@ router.post("/fetchBidById", authenticateToken, async (req, res) => {
   try {
     const id = req.body.bidId;
     const bid = await Bid.findOne({ _id: id });
-    if (!bid) {
-      return res.status(404).json({ message: "Bid not found" });
-    }
+    // if (!bid) {
+    //   return res.status(404).json({ message: "Bid not found" });
+    // }
     res.json(bid);
   } catch {
     res.status(500).send();
