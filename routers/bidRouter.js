@@ -26,6 +26,7 @@ router.post("/postBid", authenticateToken, async (req, res) => {
     const createdBy = user;
 
     const newBid = new Bid({
+      requestId,
       rate,
       message,
       attachments,

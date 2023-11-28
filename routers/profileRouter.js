@@ -66,7 +66,7 @@ router.post("/fetchProfileById", authenticateToken, async (req, res) => {
     }
 
     const UserToSend = {
-      id : found[0]["_id"],
+      id: found[0]["_id"],
       fullName: found[0]["fullName"],
       email: found[0]["email"],
       phone: found[0]["phone"],

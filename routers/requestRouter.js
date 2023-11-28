@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Request = require("../models/Request");
+const Bid = require("../models/Bid");
 const jwt = require("jsonwebtoken");
 const authenticateToken = require("../authenticate/authenticate");
 
@@ -71,16 +72,23 @@ router.get("/fetchAllRequests", authenticateToken, async (req, res) => {
 });
 
 // Route to handle request delete by Id
- router.post ("/deleteRequestById", authenticateToken, async (req, res) => {
+ router.delete ("/deleteRequestById", authenticateToken, async (req, res) => {
     try {
       const id = req.body.requestId;
       const deletedRequest = await Request.findByIdAndDelete(id);
       if (!deletedRequest) {
         return res.status(404).json({ message: "Request not found" });
       }
+      // Delete all the bids associated with the request
+      const bids = deletedRequest.bids;
+      for (let i = 0; i < bids.length; i++) {
+        const bidId = bids[i];
+        await Bid.findByIdAndDelete(bidId);
+      }
+
       res.json({ message: "Request deleted successfully" });
     } catch (error) {
-      console.error(error);
+     
       res.status(500).send("Internal Server Error");
     }
  });

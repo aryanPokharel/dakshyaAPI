@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const User = require("./User");
 
 const bidSchema = new mongoose.Schema({
+  requestId: {
+    type: mongoose.Schema.Types.ObjectId, // Storing the request ID
+    ref: "Request", // Reference to the Request model
+    require: true,
+  },
   rate: {
     type: String,
     require: true,
