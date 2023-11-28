@@ -63,13 +63,18 @@ router.post("/postBid", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/withdrawBid", authenticateToken, async (req, res) => {
+router.delete("/withdrawBid", authenticateToken, async (req, res) => {
   try {
     const bidId = req.body.bidId;
-    const requestId = req.body.requestId;
+
+    const bid = await Bid.findOne({ _id: bidId });
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
 
     // For the request, find the request with the given ID and remove the bid from it
-    const RequestToUpdate = await Request.findOne({ _id: requestId });
+    const RequestToUpdate = await Request.findOne({ _id: bid.requestId });
+
     if (!RequestToUpdate) {
       return res.status(404).json({ message: "Request not found" });
     }
@@ -96,8 +101,7 @@ router.post("/withdrawBid", authenticateToken, async (req, res) => {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
-})
-
+});
 
 router.get("/fetchAllBidsByUser", authenticateToken, async (req, res) => {
   try {
@@ -125,6 +129,18 @@ router.delete("/deleteBidById", authenticateToken, async (req, res) => {
   }
 });
 
-
+// Get bid by id
+router.post("/fetchBidById", authenticateToken, async (req, res) => {
+  try {
+    const id = req.body.bidId;
+    const bid = await Bid.findOne({ _id: id });
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
+    res.json(bid);
+  } catch {
+    res.status(500).send();
+  }
+});
 
 module.exports = router;

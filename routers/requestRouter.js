@@ -93,4 +93,18 @@ router.get("/fetchAllRequests", authenticateToken, async (req, res) => {
     }
  });
 
+//  Get request by id
+  router.post("/fetchRequestById", authenticateToken, async (req, res) => {
+    try {
+      const id = req.body.requestId;
+      const request = await Request.findById(id);
+      if (!request) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+      res.json(request);
+    } catch {
+      res.status(500).send();
+    }
+  });
+
 module.exports = router;
