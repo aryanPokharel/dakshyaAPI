@@ -1,5 +1,10 @@
 const express = require("express");
+const http = require("http"); // Import http module
+const socketIO = require("socket.io"); // Import socket.io
+
 const app = express();
+const server = http.createServer(app); // Create an http server
+const io = socketIO(server); // Create a socket.io instance attached to the server
 
 const bodyParser = require("body-parser");
 app.use(express.urlencoded({ extended: true }));
@@ -22,12 +27,19 @@ app.use("/bid", bidRouter);
 
 app.use(express.json());
 
-const port = 3000;
-// Find an available port
-const server = app.listen(port, () => {
-  //   const port = server.address().port;
+// Define a socket.io connection event
+io.on("connection", (socket) => {
+  console.log("A user connected via socket.io");
 
+  // Event listener for when the client disconnects
+  socket.on("disconnect", () => {
+    console.log("User disconnected via socket.io");
+  })
+  
+});
+
+const port = 3000;
+
+server.listen(port, () => {
   console.log(`The Server is running on port ${port}`);
 });
-// const port = 5432;
-// app.listen(port)

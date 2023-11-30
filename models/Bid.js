@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const User = require("./User");
 
 const bidSchema = new mongoose.Schema({
+  status : {
+    default: "Pending",
+    type: String,
+    require: true,
+  },
   requestId: {
     type: mongoose.Schema.Types.ObjectId, // Storing the request ID
     ref: "Request", // Reference to the Request model

@@ -143,4 +143,55 @@ router.post("/fetchBidById", authenticateToken, async (req, res) => {
   }
 });
 
+// Approve bid by Id
+router.post("/approveBidById", authenticateToken, async (req, res) => {
+  try {
+    const id = req.body.bidId;
+    const bid = await Bid.findOne({ _id: id });
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
+    bid.status = "Approved";
+    await bid.save();
+    res.json({ message: "Bid approved" , bid: bid});
+  } catch {
+    res.status(500).send();
+  }
+});
+
+
+// Decline bid by id
+router.post("/declineBidById", authenticateToken, async (req, res) => {
+  try {
+    const id = req.body.bidId;
+    const bid = await Bid.findOne({ _id: id });
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
+    bid.status = "Declined";
+    await bid.save();
+    res.json({ message: "Bid declined" , bid: bid});
+  } catch {
+    res.status(500).send();
+  }
+});
+
+// Update bid by Id
+router.post("/updateBidById", authenticateToken, async (req, res) => {
+  try {
+    const id = req.body.bidId;
+    const bid = await Bid.findOne({ _id: id });
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
+    bid.rate = req.body.rate;
+    bid.message = req.body.message;
+    bid.attachments = req.body.attachments;
+    await bid.save();
+    res.json({ message: "Bid updated" , bid: bid});
+  } catch {
+    res.status(500).send();
+  }
+});
+
 module.exports = router;
