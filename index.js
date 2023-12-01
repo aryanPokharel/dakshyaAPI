@@ -12,8 +12,12 @@ app.use(express.urlencoded({ extended: true }));
 const cors = require("cors");
 app.use(cors());
 
-app.use(bodyParser.json());
+// Increase payload size limit to handle larger images
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+// Cloudinary configuration
+const {cloudinary} = require ('./utils/cloudinary');
 // Importing the routers
 const userRouter = require("./routers/userRouter");
 const profileRouter = require("./routers/profileRouter");

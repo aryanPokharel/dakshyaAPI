@@ -5,12 +5,36 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { json } = require("body-parser");
 
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
 const secretKey = "dakshyaAppForNepal";
 
 mongoose.set("strictQuery", true);
 mongoose.connect(
   "mongodb+srv://dakshyaApp:Dakshya123@cluster0.pyavqnw.mongodb.net/?retryWrites=true&w=majority"
 );
+
+const storage = multer.diskStorage({
+  destination : function (request, file, callback){
+      callback (null, '../public/uploads/images/gigImages')
+  },
+
+
+  filename:function(request, file, callback){
+      callback(null, Date.now() + file.originalname);
+  }
+}  
+)
+
+const upload = multer({
+  storage : storage,  
+  limits : {
+      fieldSize : 1024 * 1024 * 7
+  }
+})
+
 
 router.route("/login").post(async (req, res) => {
 

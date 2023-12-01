@@ -2,15 +2,14 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const jwt = require("jsonwebtoken");
 const authenticateToken = require("../authenticate/authenticate");
-
-const secretKey = "dakshyaAppForNepal";
 
 mongoose.set("strictQuery", true);
 mongoose.connect(
   "mongodb+srv://dakshyaApp:Dakshya123@cluster0.pyavqnw.mongodb.net/?retryWrites=true&w=majority"
 );
+
+
 
 // Protected profile route
 router.get("/", authenticateToken, async (req, res) => {
@@ -25,21 +24,29 @@ router.get("/", authenticateToken, async (req, res) => {
     res.status(500).send();
   }
 });
+
 router.post("/updateProfile", authenticateToken, async (req, res) => {
   try {
     const filter = { _id: req.user._id };
+
+    const fileStr = req.body.photo;
+ 
+
+
+
     const update = {
       fullName: req.body.fullName,
       email: req.body.email,
-      password: req.body.password, // You may want to hash the password before saving it
+      password: req.body.password,
       phone: {
         countryCode: req.body.phone.countryCode,
         number: req.body.phone.number,
       },
+      // photo: imageURL,
       dob: req.body.dob,
     };
 
-    const options = { new: true }; // Return the modified document rather than the original
+    const options = { new: true };
 
     const updatedProfile = await User.findOneAndUpdate(filter, update, options);
 
@@ -56,6 +63,7 @@ router.post("/updateProfile", authenticateToken, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 router.post("/fetchProfileById", authenticateToken, async (req, res) => {
   try {
