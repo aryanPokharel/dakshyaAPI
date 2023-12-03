@@ -194,4 +194,61 @@ router.post("/updateBidById", authenticateToken, async (req, res) => {
   }
 });
 
+
+router.post("/fetchBidsByRequestId", authenticateToken, async (req, res) => {
+ 
+  try{
+
+      const requestId = req.body.requestId;
+      const request = await Request.findById(requestId);
+      if (!request) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+      const bids = request.bids;
+      const bidsArray = [];
+      
+      for (let i = 0; i < bids.length; i++) {
+        const bidId = bids[i];
+        const bid = await Bid.findById(bidId);
+        // Add the bid to bidsArray only if the status is Pending 
+        if (bid.status === "Pending") {
+          bidsArray.push(bid);
+        }
+      }
+      var responseObject = [];
+      for (let j = 0; j < bidsArray.length; j++) {
+        // Get bidder details
+        const bidder = await User.findById(bidsArray[j].createdBy);
+        const bidderName = bidder.fullName;
+        const bidderPhoto = bidder.photo;
+        responseObject.push({
+          bid : {
+            bidId: bidsArray[j]._id,
+          rate: bidsArray[j].rate,
+          message: bidsArray[j].message,
+          attachments: bidsArray[j].attachments,
+          
+          bidOn: bidsArray[j].createdOn,
+          },
+          bidder : {
+            bidderId: bidsArray[j].createdBy,
+            bidderName: bidderName,
+            bidderPhoto: bidderPhoto,
+          }
+        })
+      }
+
+      res.json({
+        message: "Bids fetched successfully",
+        bids: responseObject,
+      });
+     
+  }
+  catch (e) {
+    console.log(e)
+    res.status(500).send();
+  }
+});
+
+
 module.exports = router;

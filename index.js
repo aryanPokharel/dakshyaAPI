@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-// Cloudinary configuration
+// Cloudinary configuration 
 const {cloudinary} = require ('./utils/cloudinary');
 // Importing the routers
 const userRouter = require("./routers/userRouter");
@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
   
 });
 
-const port = 3000;
+const port = 80;
 
 server.listen(port, () => {
   console.log(`The Server is running on port ${port}`);

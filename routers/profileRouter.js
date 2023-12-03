@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const authenticateToken = require("../authenticate/authenticate");
+const cloudinary = require('cloudinary').v2; // Import the Cloudinary SDK
 
 mongoose.set("strictQuery", true);
 mongoose.connect(
@@ -25,14 +26,24 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+
+
+// Configure Cloudinary with your account details
+// cloudinary.config({
+//   cloud_name: 'your_cloud_name',
+//   api_key: 'your_api_key',
+//   api_secret: 'your_api_secret',
+// });
+
 router.post("/updateProfile", authenticateToken, async (req, res) => {
   try {
     const filter = { _id: req.user._id };
-
     const fileStr = req.body.photo;
- 
 
-
+    // Upload the image to Cloudinary
+    const cloudinaryResponse = await cloudinary.uploader.upload(`data:image/jpeg;base64,${fileStr}`, {
+      upload_preset: 'zestsaav',
+    });
 
     const update = {
       fullName: req.body.fullName,
@@ -42,7 +53,7 @@ router.post("/updateProfile", authenticateToken, async (req, res) => {
         countryCode: req.body.phone.countryCode,
         number: req.body.phone.number,
       },
-      // photo: imageURL,
+      photo: cloudinaryResponse.secure_url,
       dob: req.body.dob,
     };
 
@@ -63,6 +74,7 @@ router.post("/updateProfile", authenticateToken, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 
 router.post("/fetchProfileById", authenticateToken, async (req, res) => {
